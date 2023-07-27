@@ -18,7 +18,6 @@ import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
 import { PatientListRelationFilter } from "../../patient/base/PatientListRelationFilter";
 import { IntFilter } from "../../util/IntFilter";
 import { SpecialtyWhereUniqueInput } from "../../specialty/base/SpecialtyWhereUniqueInput";
-import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 
 @InputType()
 class DoctorWhereInput {
@@ -100,18 +99,6 @@ class DoctorWhereInput {
     nullable: true,
   })
   specialty?: SpecialtyWhereUniqueInput;
-
-  @ApiProperty({
-    required: false,
-    type: () => UserWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => UserWhereUniqueInput)
-  @IsOptional()
-  @Field(() => UserWhereUniqueInput, {
-    nullable: true,
-  })
-  user?: UserWhereUniqueInput;
 }
 
 export { DoctorWhereInput as DoctorWhereInput };

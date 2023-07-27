@@ -16,11 +16,7 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
-import * as nestAccessControl from "nest-access-control";
-import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { DoctorService } from "../doctor.service";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { DoctorCreateInput } from "./DoctorCreateInput";
 import { DoctorWhereInput } from "./DoctorWhereInput";
 import { DoctorWhereUniqueInput } from "./DoctorWhereUniqueInput";
@@ -31,24 +27,10 @@ import { PatientFindManyArgs } from "../../patient/base/PatientFindManyArgs";
 import { Patient } from "../../patient/base/Patient";
 import { PatientWhereUniqueInput } from "../../patient/base/PatientWhereUniqueInput";
 
-@swagger.ApiBearerAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class DoctorControllerBase {
-  constructor(
-    protected readonly service: DoctorService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: DoctorService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Doctor })
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "create",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: DoctorCreateInput): Promise<Doctor> {
     return await this.service.create({
       data: {
@@ -57,12 +39,6 @@ export class DoctorControllerBase {
         specialty: data.specialty
           ? {
               connect: data.specialty,
-            }
-          : undefined,
-
-        user: data.user
-          ? {
-              connect: data.user,
             }
           : undefined,
       },
@@ -81,28 +57,13 @@ export class DoctorControllerBase {
         },
 
         updatedAt: true,
-
-        user: {
-          select: {
-            id: true,
-          },
-        },
       },
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Doctor] })
   @ApiNestedQuery(DoctorFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "read",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Doctor[]> {
     const args = plainToClass(DoctorFindManyArgs, request.query);
     return this.service.findMany({
@@ -122,28 +83,13 @@ export class DoctorControllerBase {
         },
 
         updatedAt: true,
-
-        user: {
-          select: {
-            id: true,
-          },
-        },
       },
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Doctor })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "read",
-    possession: "own",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: DoctorWhereUniqueInput
   ): Promise<Doctor | null> {
@@ -164,12 +110,6 @@ export class DoctorControllerBase {
         },
 
         updatedAt: true,
-
-        user: {
-          select: {
-            id: true,
-          },
-        },
       },
     });
     if (result === null) {
@@ -180,18 +120,9 @@ export class DoctorControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Doctor })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "update",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: DoctorWhereUniqueInput,
     @common.Body() data: DoctorUpdateInput
@@ -205,12 +136,6 @@ export class DoctorControllerBase {
           specialty: data.specialty
             ? {
                 connect: data.specialty,
-              }
-            : undefined,
-
-          user: data.user
-            ? {
-                connect: data.user,
               }
             : undefined,
         },
@@ -229,12 +154,6 @@ export class DoctorControllerBase {
           },
 
           updatedAt: true,
-
-          user: {
-            select: {
-              id: true,
-            },
-          },
         },
       });
     } catch (error) {
@@ -250,14 +169,6 @@ export class DoctorControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Doctor })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "delete",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: DoctorWhereUniqueInput
   ): Promise<Doctor | null> {
@@ -279,12 +190,6 @@ export class DoctorControllerBase {
           },
 
           updatedAt: true,
-
-          user: {
-            select: {
-              id: true,
-            },
-          },
         },
       });
     } catch (error) {
@@ -297,14 +202,8 @@ export class DoctorControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/patients")
   @ApiNestedQuery(PatientFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "any",
-  })
   async findManyPatients(
     @common.Req() request: Request,
     @common.Param() params: DoctorWhereUniqueInput
@@ -316,6 +215,13 @@ export class DoctorControllerBase {
         age: true,
         birthday: true,
         createdAt: true,
+
+        Doctors: {
+          select: {
+            id: true,
+          },
+        },
+
         firstName: true,
         id: true,
         lastName: true,
@@ -338,11 +244,6 @@ export class DoctorControllerBase {
   }
 
   @common.Post("/:id/patients")
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "update",
-    possession: "any",
-  })
   async connectPatients(
     @common.Param() params: DoctorWhereUniqueInput,
     @common.Body() body: PatientWhereUniqueInput[]
@@ -360,11 +261,6 @@ export class DoctorControllerBase {
   }
 
   @common.Patch("/:id/patients")
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "update",
-    possession: "any",
-  })
   async updatePatients(
     @common.Param() params: DoctorWhereUniqueInput,
     @common.Body() body: PatientWhereUniqueInput[]
@@ -382,11 +278,6 @@ export class DoctorControllerBase {
   }
 
   @common.Delete("/:id/patients")
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "update",
-    possession: "any",
-  })
   async disconnectPatients(
     @common.Param() params: DoctorWhereUniqueInput,
     @common.Body() body: PatientWhereUniqueInput[]

@@ -19,7 +19,7 @@ import {
   IsString,
 } from "class-validator";
 import { Type } from "class-transformer";
-import { DoctorCreateNestedManyWithoutPatientsInput } from "./DoctorCreateNestedManyWithoutPatientsInput";
+import { DoctorWhereUniqueInput } from "../../doctor/base/DoctorWhereUniqueInput";
 import { MedicalHistoryWhereUniqueInput } from "../../medicalHistory/base/MedicalHistoryWhereUniqueInput";
 
 @InputType()
@@ -45,15 +45,15 @@ class PatientCreateInput {
 
   @ApiProperty({
     required: false,
-    type: () => DoctorCreateNestedManyWithoutPatientsInput,
+    type: () => DoctorWhereUniqueInput,
   })
   @ValidateNested()
-  @Type(() => DoctorCreateNestedManyWithoutPatientsInput)
+  @Type(() => DoctorWhereUniqueInput)
   @IsOptional()
-  @Field(() => DoctorCreateNestedManyWithoutPatientsInput, {
+  @Field(() => DoctorWhereUniqueInput, {
     nullable: true,
   })
-  Doctors?: DoctorCreateNestedManyWithoutPatientsInput;
+  Doctors?: DoctorWhereUniqueInput | null;
 
   @ApiProperty({
     required: true,

@@ -9,5 +9,4 @@ export type DoctorOrderByInput = {
   PID?: SortOrder;
   specialtyId?: SortOrder;
   updatedAt?: SortOrder;
-  userId?: SortOrder;
 };

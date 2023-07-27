@@ -13,12 +13,6 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreateSpecialtyArgs } from "./CreateSpecialtyArgs";
 import { UpdateSpecialtyArgs } from "./UpdateSpecialtyArgs";
 import { DeleteSpecialtyArgs } from "./DeleteSpecialtyArgs";
@@ -29,20 +23,10 @@ import { Specialty } from "./Specialty";
 import { DoctorFindManyArgs } from "../../doctor/base/DoctorFindManyArgs";
 import { Doctor } from "../../doctor/base/Doctor";
 import { SpecialtyService } from "../specialty.service";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Specialty)
 export class SpecialtyResolverBase {
-  constructor(
-    protected readonly service: SpecialtyService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: SpecialtyService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "Specialty",
-    action: "read",
-    possession: "any",
-  })
   async _specialtiesMeta(
     @graphql.Args() args: SpecialtyCountArgs
   ): Promise<MetaQueryPayload> {
@@ -52,26 +36,14 @@ export class SpecialtyResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Specialty])
-  @nestAccessControl.UseRoles({
-    resource: "Specialty",
-    action: "read",
-    possession: "any",
-  })
   async specialties(
     @graphql.Args() args: SpecialtyFindManyArgs
   ): Promise<Specialty[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Specialty, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Specialty",
-    action: "read",
-    possession: "own",
-  })
   async specialty(
     @graphql.Args() args: SpecialtyFindUniqueArgs
   ): Promise<Specialty | null> {
@@ -82,13 +54,7 @@ export class SpecialtyResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Specialty)
-  @nestAccessControl.UseRoles({
-    resource: "Specialty",
-    action: "create",
-    possession: "any",
-  })
   async createSpecialty(
     @graphql.Args() args: CreateSpecialtyArgs
   ): Promise<Specialty> {
@@ -98,13 +64,7 @@ export class SpecialtyResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Specialty)
-  @nestAccessControl.UseRoles({
-    resource: "Specialty",
-    action: "update",
-    possession: "any",
-  })
   async updateSpecialty(
     @graphql.Args() args: UpdateSpecialtyArgs
   ): Promise<Specialty | null> {
@@ -124,11 +84,6 @@ export class SpecialtyResolverBase {
   }
 
   @graphql.Mutation(() => Specialty)
-  @nestAccessControl.UseRoles({
-    resource: "Specialty",
-    action: "delete",
-    possession: "any",
-  })
   async deleteSpecialty(
     @graphql.Args() args: DeleteSpecialtyArgs
   ): Promise<Specialty | null> {
@@ -144,13 +99,7 @@ export class SpecialtyResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Doctor], { name: "doctors" })
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "read",
-    possession: "any",
-  })
   async resolveFieldDoctors(
     @graphql.Parent() parent: Specialty,
     @graphql.Args() args: DoctorFindManyArgs

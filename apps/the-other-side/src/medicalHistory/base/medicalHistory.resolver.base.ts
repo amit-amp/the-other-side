@@ -13,12 +13,6 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreateMedicalHistoryArgs } from "./CreateMedicalHistoryArgs";
 import { UpdateMedicalHistoryArgs } from "./UpdateMedicalHistoryArgs";
 import { DeleteMedicalHistoryArgs } from "./DeleteMedicalHistoryArgs";
@@ -28,20 +22,10 @@ import { MedicalHistoryFindUniqueArgs } from "./MedicalHistoryFindUniqueArgs";
 import { MedicalHistory } from "./MedicalHistory";
 import { Patient } from "../../patient/base/Patient";
 import { MedicalHistoryService } from "../medicalHistory.service";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => MedicalHistory)
 export class MedicalHistoryResolverBase {
-  constructor(
-    protected readonly service: MedicalHistoryService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: MedicalHistoryService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "read",
-    possession: "any",
-  })
   async _medicalHistoriesMeta(
     @graphql.Args() args: MedicalHistoryCountArgs
   ): Promise<MetaQueryPayload> {
@@ -51,26 +35,14 @@ export class MedicalHistoryResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [MedicalHistory])
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "read",
-    possession: "any",
-  })
   async medicalHistories(
     @graphql.Args() args: MedicalHistoryFindManyArgs
   ): Promise<MedicalHistory[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => MedicalHistory, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "read",
-    possession: "own",
-  })
   async medicalHistory(
     @graphql.Args() args: MedicalHistoryFindUniqueArgs
   ): Promise<MedicalHistory | null> {
@@ -81,13 +53,7 @@ export class MedicalHistoryResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => MedicalHistory)
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "create",
-    possession: "any",
-  })
   async createMedicalHistory(
     @graphql.Args() args: CreateMedicalHistoryArgs
   ): Promise<MedicalHistory> {
@@ -105,13 +71,7 @@ export class MedicalHistoryResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => MedicalHistory)
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "update",
-    possession: "any",
-  })
   async updateMedicalHistory(
     @graphql.Args() args: UpdateMedicalHistoryArgs
   ): Promise<MedicalHistory | null> {
@@ -139,11 +99,6 @@ export class MedicalHistoryResolverBase {
   }
 
   @graphql.Mutation(() => MedicalHistory)
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "delete",
-    possession: "any",
-  })
   async deleteMedicalHistory(
     @graphql.Args() args: DeleteMedicalHistoryArgs
   ): Promise<MedicalHistory | null> {
@@ -159,15 +114,9 @@ export class MedicalHistoryResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Patient, {
     nullable: true,
     name: "patients",
-  })
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "any",
   })
   async resolveFieldPatients(
     @graphql.Parent() parent: MedicalHistory

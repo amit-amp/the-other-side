@@ -47,15 +47,12 @@ export class PatientServiceBase {
     return this.prisma.patient.delete(args);
   }
 
-  async findDoctors(
-    parentId: string,
-    args: Prisma.DoctorFindManyArgs
-  ): Promise<Doctor[]> {
+  async getDoctors(parentId: string): Promise<Doctor | null> {
     return this.prisma.patient
-      .findUniqueOrThrow({
+      .findUnique({
         where: { id: parentId },
       })
-      .Doctors(args);
+      .Doctors();
   }
 
   async getMedicalHistory(parentId: string): Promise<MedicalHistory | null> {

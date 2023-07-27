@@ -8,10 +8,13 @@ import {
   TextField,
   BooleanField,
   ReferenceField,
+  ReferenceManyField,
+  Datagrid,
 } from "react-admin";
 
+import { DOCTOR_TITLE_FIELD } from "./DoctorTitle";
+import { MEDICALHISTORY_TITLE_FIELD } from "../medicalHistory/MedicalHistoryTitle";
 import { SPECIALTY_TITLE_FIELD } from "../specialty/SpecialtyTitle";
-import { USER_TITLE_FIELD } from "../user/UserTitle";
 
 export const DoctorShow = (props: ShowProps): React.ReactElement => {
   return (
@@ -31,9 +34,35 @@ export const DoctorShow = (props: ShowProps): React.ReactElement => {
           <TextField source={SPECIALTY_TITLE_FIELD} />
         </ReferenceField>
         <DateField source="updatedAt" label="Updated At" />
-        <ReferenceField label="User" source="user.id" reference="User">
-          <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
+        <ReferenceManyField
+          reference="Patient"
+          target="DoctorsId"
+          label="Patients"
+        >
+          <Datagrid rowClick="show">
+            <TextField label="age" source="age" />
+            <TextField label="birthday" source="birthday" />
+            <DateField source="createdAt" label="Created At" />
+            <ReferenceField
+              label="Doctors"
+              source="doctor.id"
+              reference="Doctor"
+            >
+              <TextField source={DOCTOR_TITLE_FIELD} />
+            </ReferenceField>
+            <TextField label="first name" source="firstName" />
+            <TextField label="ID" source="id" />
+            <TextField label="last name" source="lastName" />
+            <ReferenceField
+              label="medical_history"
+              source="medicalhistory.id"
+              reference="MedicalHistory"
+            >
+              <TextField source={MEDICALHISTORY_TITLE_FIELD} />
+            </ReferenceField>
+            <DateField source="updatedAt" label="Updated At" />
+          </Datagrid>
+        </ReferenceManyField>
       </SimpleShowLayout>
     </Show>
   );

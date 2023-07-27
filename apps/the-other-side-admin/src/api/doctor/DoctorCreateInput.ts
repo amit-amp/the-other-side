@@ -1,6 +1,5 @@
 import { PatientCreateNestedManyWithoutDoctorsInput } from "./PatientCreateNestedManyWithoutDoctorsInput";
 import { SpecialtyWhereUniqueInput } from "../specialty/SpecialtyWhereUniqueInput";
-import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
 
 export type DoctorCreateInput = {
   first_name: string;
@@ -9,5 +8,4 @@ export type DoctorCreateInput = {
   patients?: PatientCreateNestedManyWithoutDoctorsInput;
   PID: number;
   specialty?: SpecialtyWhereUniqueInput | null;
-  user?: UserWhereUniqueInput | null;
 };

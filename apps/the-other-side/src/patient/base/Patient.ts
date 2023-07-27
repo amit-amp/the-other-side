@@ -53,12 +53,12 @@ class Patient {
 
   @ApiProperty({
     required: false,
-    type: () => [Doctor],
+    type: () => Doctor,
   })
   @ValidateNested()
   @Type(() => Doctor)
   @IsOptional()
-  Doctors?: Array<Doctor>;
+  Doctors?: Doctor | null;
 
   @ApiProperty({
     required: true,

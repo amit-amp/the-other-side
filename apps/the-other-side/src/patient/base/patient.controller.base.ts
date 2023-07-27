@@ -16,43 +16,28 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
-import * as nestAccessControl from "nest-access-control";
-import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { PatientService } from "../patient.service";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { PatientCreateInput } from "./PatientCreateInput";
 import { PatientWhereInput } from "./PatientWhereInput";
 import { PatientWhereUniqueInput } from "./PatientWhereUniqueInput";
 import { PatientFindManyArgs } from "./PatientFindManyArgs";
 import { PatientUpdateInput } from "./PatientUpdateInput";
 import { Patient } from "./Patient";
-import { DoctorFindManyArgs } from "../../doctor/base/DoctorFindManyArgs";
-import { Doctor } from "../../doctor/base/Doctor";
-import { DoctorWhereUniqueInput } from "../../doctor/base/DoctorWhereUniqueInput";
 
-@swagger.ApiBearerAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class PatientControllerBase {
-  constructor(
-    protected readonly service: PatientService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: PatientService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Patient })
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "create",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: PatientCreateInput): Promise<Patient> {
     return await this.service.create({
       data: {
         ...data,
+
+        Doctors: data.Doctors
+          ? {
+              connect: data.Doctors,
+            }
+          : undefined,
 
         medicalHistory: data.medicalHistory
           ? {
@@ -64,6 +49,13 @@ export class PatientControllerBase {
         age: true,
         birthday: true,
         createdAt: true,
+
+        Doctors: {
+          select: {
+            id: true,
+          },
+        },
+
         firstName: true,
         id: true,
         lastName: true,
@@ -79,18 +71,9 @@ export class PatientControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Patient] })
   @ApiNestedQuery(PatientFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Patient[]> {
     const args = plainToClass(PatientFindManyArgs, request.query);
     return this.service.findMany({
@@ -99,6 +82,13 @@ export class PatientControllerBase {
         age: true,
         birthday: true,
         createdAt: true,
+
+        Doctors: {
+          select: {
+            id: true,
+          },
+        },
+
         firstName: true,
         id: true,
         lastName: true,
@@ -114,18 +104,9 @@ export class PatientControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Patient })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "own",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: PatientWhereUniqueInput
   ): Promise<Patient | null> {
@@ -135,6 +116,13 @@ export class PatientControllerBase {
         age: true,
         birthday: true,
         createdAt: true,
+
+        Doctors: {
+          select: {
+            id: true,
+          },
+        },
+
         firstName: true,
         id: true,
         lastName: true,
@@ -156,18 +144,9 @@ export class PatientControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Patient })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "update",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: PatientWhereUniqueInput,
     @common.Body() data: PatientUpdateInput
@@ -177,6 +156,12 @@ export class PatientControllerBase {
         where: params,
         data: {
           ...data,
+
+          Doctors: data.Doctors
+            ? {
+                connect: data.Doctors,
+              }
+            : undefined,
 
           medicalHistory: data.medicalHistory
             ? {
@@ -188,6 +173,13 @@ export class PatientControllerBase {
           age: true,
           birthday: true,
           createdAt: true,
+
+          Doctors: {
+            select: {
+              id: true,
+            },
+          },
+
           firstName: true,
           id: true,
           lastName: true,
@@ -214,14 +206,6 @@ export class PatientControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Patient })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "delete",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: PatientWhereUniqueInput
   ): Promise<Patient | null> {
@@ -232,6 +216,13 @@ export class PatientControllerBase {
           age: true,
           birthday: true,
           createdAt: true,
+
+          Doctors: {
+            select: {
+              id: true,
+            },
+          },
+
           firstName: true,
           id: true,
           lastName: true,
@@ -253,117 +244,5 @@ export class PatientControllerBase {
       }
       throw error;
     }
-  }
-
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @common.Get("/:id/Doctors")
-  @ApiNestedQuery(DoctorFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "read",
-    possession: "any",
-  })
-  async findManyDoctors(
-    @common.Req() request: Request,
-    @common.Param() params: PatientWhereUniqueInput
-  ): Promise<Doctor[]> {
-    const query = plainToClass(DoctorFindManyArgs, request.query);
-    const results = await this.service.findDoctors(params.id, {
-      ...query,
-      select: {
-        createdAt: true,
-        first_name: true,
-        id: true,
-        IsPrivate: true,
-        last_name: true,
-        PID: true,
-
-        specialty: {
-          select: {
-            id: true,
-          },
-        },
-
-        updatedAt: true,
-
-        user: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        `No resource was found for ${JSON.stringify(params)}`
-      );
-    }
-    return results;
-  }
-
-  @common.Post("/:id/Doctors")
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "update",
-    possession: "any",
-  })
-  async connectDoctors(
-    @common.Param() params: PatientWhereUniqueInput,
-    @common.Body() body: DoctorWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      Doctors: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @common.Patch("/:id/Doctors")
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "update",
-    possession: "any",
-  })
-  async updateDoctors(
-    @common.Param() params: PatientWhereUniqueInput,
-    @common.Body() body: DoctorWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      Doctors: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @common.Delete("/:id/Doctors")
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "update",
-    possession: "any",
-  })
-  async disconnectDoctors(
-    @common.Param() params: PatientWhereUniqueInput,
-    @common.Body() body: DoctorWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      Doctors: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
   }
 }
