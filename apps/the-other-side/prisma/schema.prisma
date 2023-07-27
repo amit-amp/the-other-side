@@ -9,6 +9,8 @@ generator client {
 
 model User {
   createdAt DateTime @default(now())
+  doctor    Doctor?  @relation(fields: [doctorId], references: [id])
+  doctorId  String?  @unique
   firstName String?
   id        String   @id @default(cuid())
   lastName  String?
@@ -16,4 +18,50 @@ model User {
   roles     Json
   updatedAt DateTime @updatedAt
   username  String   @unique
+}
+
+model Doctor {
+  createdAt   DateTime   @default(now())
+  first_name  String
+  id          String     @id @default(cuid())
+  IsPrivate   Boolean?   @default(false)
+  last_name   String
+  patients    Patient[]
+  PID         Int        @unique
+  specialty   Specialty? @relation(fields: [specialtyId], references: [id])
+  specialtyId String?
+  updatedAt   DateTime   @updatedAt
+  user        User?
+}
+
+model Patient {
+  age              Float
+  birthday         DateTime?       @db.Date
+  createdAt        DateTime        @default(now())
+  Doctors          Doctor[]
+  firstName        String
+  id               String          @id @default(cuid())
+  lastName         String
+  medicalHistory   MedicalHistory? @relation(fields: [medicalHistoryId], references: [id])
+  medicalHistoryId String?         @unique
+  updatedAt        DateTime        @updatedAt
+}
+
+model MedicalHistory {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  MID       Int      @unique
+  name      String?
+  patients  Patient?
+  updatedAt DateTime @updatedAt
+}
+
+model Specialty {
+  createdAt   DateTime @default(now())
+  description String?
+  doctors     Doctor[]
+  field_name  String   @unique
+  id          String   @id @default(cuid())
+  SFID        Int
+  updatedAt   DateTime @updatedAt
 }

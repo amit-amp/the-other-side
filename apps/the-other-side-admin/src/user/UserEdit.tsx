@@ -1,18 +1,26 @@
 import * as React from "react";
+
 import {
   Edit,
   SimpleForm,
   EditProps,
+  ReferenceInput,
+  SelectInput,
   TextInput,
   PasswordInput,
   SelectArrayInput,
 } from "react-admin";
+
+import { DoctorTitle } from "../doctor/DoctorTitle";
 import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <ReferenceInput source="doctor.id" reference="Doctor" label="Doctor">
+          <SelectInput optionText={DoctorTitle} />
+        </ReferenceInput>
         <TextInput label="First Name" source="firstName" />
         <TextInput label="Last Name" source="lastName" />
         <PasswordInput label="Password" source="password" />
