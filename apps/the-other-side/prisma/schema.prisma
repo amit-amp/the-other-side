@@ -36,7 +36,7 @@ model Doctor {
 
 model Patient {
   age              Float
-  birthday         DateTime?       @db.Date
+  birthday         DateTime?       @postgres.Date
   createdAt        DateTime        @default(now())
   Doctors          Doctor[]
   firstName        String
