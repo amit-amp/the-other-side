@@ -15,7 +15,6 @@ import {
 
 import { PatientTitle } from "../patient/PatientTitle";
 import { SpecialtyTitle } from "../specialty/SpecialtyTitle";
-import { UserTitle } from "../user/UserTitle";
 
 export const DoctorEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -39,9 +38,6 @@ export const DoctorEdit = (props: EditProps): React.ReactElement => {
           label="Specialty"
         >
           <SelectInput optionText={SpecialtyTitle} />
-        </ReferenceInput>
-        <ReferenceInput source="user.id" reference="User" label="User">
-          <SelectInput optionText={UserTitle} />
         </ReferenceInput>
       </SimpleForm>
     </Edit>

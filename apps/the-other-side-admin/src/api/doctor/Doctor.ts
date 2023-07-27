@@ -1,6 +1,5 @@
 import { Patient } from "../patient/Patient";
 import { Specialty } from "../specialty/Specialty";
-import { User } from "../user/User";
 
 export type Doctor = {
   createdAt: Date;
@@ -12,5 +11,4 @@ export type Doctor = {
   PID: number;
   specialty?: Specialty | null;
   updatedAt: Date;
-  user?: User | null;
 };

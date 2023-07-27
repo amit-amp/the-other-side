@@ -15,7 +15,7 @@ import { FloatFilter } from "../../util/FloatFilter";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
 import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
-import { DoctorListRelationFilter } from "../../doctor/base/DoctorListRelationFilter";
+import { DoctorWhereUniqueInput } from "../../doctor/base/DoctorWhereUniqueInput";
 import { StringFilter } from "../../util/StringFilter";
 import { MedicalHistoryWhereUniqueInput } from "../../medicalHistory/base/MedicalHistoryWhereUniqueInput";
 
@@ -45,15 +45,15 @@ class PatientWhereInput {
 
   @ApiProperty({
     required: false,
-    type: () => DoctorListRelationFilter,
+    type: () => DoctorWhereUniqueInput,
   })
   @ValidateNested()
-  @Type(() => DoctorListRelationFilter)
+  @Type(() => DoctorWhereUniqueInput)
   @IsOptional()
-  @Field(() => DoctorListRelationFilter, {
+  @Field(() => DoctorWhereUniqueInput, {
     nullable: true,
   })
-  Doctors?: DoctorListRelationFilter;
+  Doctors?: DoctorWhereUniqueInput;
 
   @ApiProperty({
     required: false,

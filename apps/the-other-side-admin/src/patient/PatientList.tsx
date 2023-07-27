@@ -8,6 +8,7 @@ import {
   ReferenceField,
 } from "react-admin";
 import Pagination from "../Components/Pagination";
+import { DOCTOR_TITLE_FIELD } from "../doctor/DoctorTitle";
 import { MEDICALHISTORY_TITLE_FIELD } from "../medicalHistory/MedicalHistoryTitle";
 
 export const PatientList = (props: ListProps): React.ReactElement => {
@@ -23,6 +24,9 @@ export const PatientList = (props: ListProps): React.ReactElement => {
         <TextField label="age" source="age" />
         <TextField label="birthday" source="birthday" />
         <DateField source="createdAt" label="Created At" />
+        <ReferenceField label="Doctors" source="doctor.id" reference="Doctor">
+          <TextField source={DOCTOR_TITLE_FIELD} />
+        </ReferenceField>
         <TextField label="first name" source="firstName" />
         <TextField label="ID" source="id" />
         <TextField label="last name" source="lastName" />

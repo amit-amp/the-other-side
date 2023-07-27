@@ -3,7 +3,6 @@ import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
 import { PatientListRelationFilter } from "../patient/PatientListRelationFilter";
 import { IntFilter } from "../../util/IntFilter";
 import { SpecialtyWhereUniqueInput } from "../specialty/SpecialtyWhereUniqueInput";
-import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
 
 export type DoctorWhereInput = {
   first_name?: StringFilter;
@@ -13,5 +12,4 @@ export type DoctorWhereInput = {
   patients?: PatientListRelationFilter;
   PID?: IntFilter;
   specialty?: SpecialtyWhereUniqueInput;
-  user?: UserWhereUniqueInput;
 };

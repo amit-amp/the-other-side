@@ -12,7 +12,6 @@ import {
 
 import Pagination from "../Components/Pagination";
 import { SPECIALTY_TITLE_FIELD } from "../specialty/SpecialtyTitle";
-import { USER_TITLE_FIELD } from "../user/UserTitle";
 
 export const DoctorList = (props: ListProps): React.ReactElement => {
   return (
@@ -38,9 +37,6 @@ export const DoctorList = (props: ListProps): React.ReactElement => {
           <TextField source={SPECIALTY_TITLE_FIELD} />
         </ReferenceField>
         <DateField source="updatedAt" label="Updated At" />
-        <ReferenceField label="User" source="user.id" reference="User">
-          <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
       </Datagrid>
     </List>
   );

@@ -61,6 +61,17 @@ class PatientOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  DoctorsId?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   firstName?: SortOrder;
 
   @ApiProperty({

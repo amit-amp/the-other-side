@@ -1,6 +1,5 @@
 import { PatientUpdateManyWithoutDoctorsInput } from "./PatientUpdateManyWithoutDoctorsInput";
 import { SpecialtyWhereUniqueInput } from "../specialty/SpecialtyWhereUniqueInput";
-import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
 
 export type DoctorUpdateInput = {
   first_name?: string;
@@ -9,5 +8,4 @@ export type DoctorUpdateInput = {
   patients?: PatientUpdateManyWithoutDoctorsInput;
   PID?: number;
   specialty?: SpecialtyWhereUniqueInput | null;
-  user?: UserWhereUniqueInput | null;
 };

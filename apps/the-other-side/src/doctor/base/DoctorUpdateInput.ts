@@ -21,7 +21,6 @@ import {
 import { PatientUpdateManyWithoutDoctorsInput } from "./PatientUpdateManyWithoutDoctorsInput";
 import { Type } from "class-transformer";
 import { SpecialtyWhereUniqueInput } from "../../specialty/base/SpecialtyWhereUniqueInput";
-import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 
 @InputType()
 class DoctorUpdateInput {
@@ -92,18 +91,6 @@ class DoctorUpdateInput {
     nullable: true,
   })
   specialty?: SpecialtyWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
-    type: () => UserWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => UserWhereUniqueInput)
-  @IsOptional()
-  @Field(() => UserWhereUniqueInput, {
-    nullable: true,
-  })
-  user?: UserWhereUniqueInput | null;
 }
 
 export { DoctorUpdateInput as DoctorUpdateInput };

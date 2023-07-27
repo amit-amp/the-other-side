@@ -16,11 +16,7 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
-import * as nestAccessControl from "nest-access-control";
-import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { MedicalHistoryService } from "../medicalHistory.service";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { MedicalHistoryCreateInput } from "./MedicalHistoryCreateInput";
 import { MedicalHistoryWhereInput } from "./MedicalHistoryWhereInput";
 import { MedicalHistoryWhereUniqueInput } from "./MedicalHistoryWhereUniqueInput";
@@ -28,24 +24,10 @@ import { MedicalHistoryFindManyArgs } from "./MedicalHistoryFindManyArgs";
 import { MedicalHistoryUpdateInput } from "./MedicalHistoryUpdateInput";
 import { MedicalHistory } from "./MedicalHistory";
 
-@swagger.ApiBearerAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class MedicalHistoryControllerBase {
-  constructor(
-    protected readonly service: MedicalHistoryService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: MedicalHistoryService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: MedicalHistory })
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "create",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(
     @common.Body() data: MedicalHistoryCreateInput
   ): Promise<MedicalHistory> {
@@ -76,18 +58,9 @@ export class MedicalHistoryControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [MedicalHistory] })
   @ApiNestedQuery(MedicalHistoryFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "read",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<MedicalHistory[]> {
     const args = plainToClass(MedicalHistoryFindManyArgs, request.query);
     return this.service.findMany({
@@ -109,18 +82,9 @@ export class MedicalHistoryControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: MedicalHistory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "read",
-    possession: "own",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: MedicalHistoryWhereUniqueInput
   ): Promise<MedicalHistory | null> {
@@ -149,18 +113,9 @@ export class MedicalHistoryControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: MedicalHistory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "update",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: MedicalHistoryWhereUniqueInput,
     @common.Body() data: MedicalHistoryUpdateInput
@@ -205,14 +160,6 @@ export class MedicalHistoryControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: MedicalHistory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "delete",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: MedicalHistoryWhereUniqueInput
   ): Promise<MedicalHistory | null> {

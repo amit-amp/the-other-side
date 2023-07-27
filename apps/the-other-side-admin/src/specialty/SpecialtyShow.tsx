@@ -13,7 +13,6 @@ import {
 } from "react-admin";
 
 import { SPECIALTY_TITLE_FIELD } from "./SpecialtyTitle";
-import { USER_TITLE_FIELD } from "../user/UserTitle";
 
 export const SpecialtyShow = (props: ShowProps): React.ReactElement => {
   return (
@@ -45,9 +44,6 @@ export const SpecialtyShow = (props: ShowProps): React.ReactElement => {
               <TextField source={SPECIALTY_TITLE_FIELD} />
             </ReferenceField>
             <DateField source="updatedAt" label="Updated At" />
-            <ReferenceField label="User" source="user.id" reference="User">
-              <TextField source={USER_TITLE_FIELD} />
-            </ReferenceField>
           </Datagrid>
         </ReferenceManyField>
       </SimpleShowLayout>

@@ -1,10 +1,10 @@
-import { DoctorCreateNestedManyWithoutPatientsInput } from "./DoctorCreateNestedManyWithoutPatientsInput";
+import { DoctorWhereUniqueInput } from "../doctor/DoctorWhereUniqueInput";
 import { MedicalHistoryWhereUniqueInput } from "../medicalHistory/MedicalHistoryWhereUniqueInput";
 
 export type PatientCreateInput = {
   age: number;
   birthday?: Date | null;
-  Doctors?: DoctorCreateNestedManyWithoutPatientsInput;
+  Doctors?: DoctorWhereUniqueInput | null;
   firstName: string;
   lastName: string;
   medicalHistory?: MedicalHistoryWhereUniqueInput | null;

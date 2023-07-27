@@ -1,13 +1,13 @@
 import { FloatFilter } from "../../util/FloatFilter";
 import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
-import { DoctorListRelationFilter } from "../doctor/DoctorListRelationFilter";
+import { DoctorWhereUniqueInput } from "../doctor/DoctorWhereUniqueInput";
 import { StringFilter } from "../../util/StringFilter";
 import { MedicalHistoryWhereUniqueInput } from "../medicalHistory/MedicalHistoryWhereUniqueInput";
 
 export type PatientWhereInput = {
   age?: FloatFilter;
   birthday?: DateTimeNullableFilter;
-  Doctors?: DoctorListRelationFilter;
+  Doctors?: DoctorWhereUniqueInput;
   firstName?: StringFilter;
   id?: StringFilter;
   lastName?: StringFilter;

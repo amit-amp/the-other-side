@@ -7,19 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  createdAt DateTime @default(now())
-  doctor    Doctor?  @relation(fields: [doctorId], references: [id])
-  doctorId  String?  @unique
-  firstName String?
-  id        String   @id @default(cuid())
-  lastName  String?
-  password  String
-  roles     Json
-  updatedAt DateTime @updatedAt
-  username  String   @unique
-}
-
 model Doctor {
   createdAt   DateTime   @default(now())
   first_name  String
@@ -31,14 +18,14 @@ model Doctor {
   specialty   Specialty? @relation(fields: [specialtyId], references: [id])
   specialtyId String?
   updatedAt   DateTime   @updatedAt
-  user        User?
 }
 
 model Patient {
   age              Float
   birthday         DateTime?       @postgres.Date
   createdAt        DateTime        @default(now())
-  Doctors          Doctor[]
+  Doctors          Doctor?         @relation(fields: [DoctorsId], references: [id])
+  DoctorsId        String?
   firstName        String
   id               String          @id @default(cuid())
   lastName         String

@@ -6,11 +6,9 @@ import {
   CreateProps,
   NumberInput,
   DateTimeInput,
-  ReferenceArrayInput,
-  SelectArrayInput,
-  TextInput,
   ReferenceInput,
   SelectInput,
+  TextInput,
 } from "react-admin";
 
 import { DoctorTitle } from "../doctor/DoctorTitle";
@@ -22,14 +20,9 @@ export const PatientCreate = (props: CreateProps): React.ReactElement => {
       <SimpleForm>
         <NumberInput label="age" source="age" />
         <DateTimeInput label="birthday" source="birthday" />
-        <ReferenceArrayInput
-          source="Doctors"
-          reference="Doctor"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={DoctorTitle} />
-        </ReferenceArrayInput>
+        <ReferenceInput source="Doctors.id" reference="Doctor" label="Doctors">
+          <SelectInput optionText={DoctorTitle} />
+        </ReferenceInput>
         <TextInput label="first name" source="firstName" />
         <TextInput label="last name" source="lastName" />
         <ReferenceInput

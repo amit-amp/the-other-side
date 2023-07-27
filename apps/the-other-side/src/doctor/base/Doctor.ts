@@ -22,7 +22,6 @@ import {
 import { Type } from "class-transformer";
 import { Patient } from "../../patient/base/Patient";
 import { Specialty } from "../../specialty/base/Specialty";
-import { User } from "../../user/base/User";
 
 @ObjectType()
 class Doctor {
@@ -102,15 +101,6 @@ class Doctor {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
-
-  @ApiProperty({
-    required: false,
-    type: () => User,
-  })
-  @ValidateNested()
-  @Type(() => User)
-  @IsOptional()
-  user?: User | null;
 }
 
 export { Doctor as Doctor };

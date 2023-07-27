@@ -13,12 +13,6 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreatePatientArgs } from "./CreatePatientArgs";
 import { UpdatePatientArgs } from "./UpdatePatientArgs";
 import { DeletePatientArgs } from "./DeletePatientArgs";
@@ -26,24 +20,13 @@ import { PatientCountArgs } from "./PatientCountArgs";
 import { PatientFindManyArgs } from "./PatientFindManyArgs";
 import { PatientFindUniqueArgs } from "./PatientFindUniqueArgs";
 import { Patient } from "./Patient";
-import { DoctorFindManyArgs } from "../../doctor/base/DoctorFindManyArgs";
 import { Doctor } from "../../doctor/base/Doctor";
 import { MedicalHistory } from "../../medicalHistory/base/MedicalHistory";
 import { PatientService } from "../patient.service";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Patient)
 export class PatientResolverBase {
-  constructor(
-    protected readonly service: PatientService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: PatientService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "any",
-  })
   async _patientsMeta(
     @graphql.Args() args: PatientCountArgs
   ): Promise<MetaQueryPayload> {
@@ -53,26 +36,14 @@ export class PatientResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Patient])
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "any",
-  })
   async patients(
     @graphql.Args() args: PatientFindManyArgs
   ): Promise<Patient[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Patient, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "read",
-    possession: "own",
-  })
   async patient(
     @graphql.Args() args: PatientFindUniqueArgs
   ): Promise<Patient | null> {
@@ -83,13 +54,7 @@ export class PatientResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Patient)
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "create",
-    possession: "any",
-  })
   async createPatient(
     @graphql.Args() args: CreatePatientArgs
   ): Promise<Patient> {
@@ -97,6 +62,12 @@ export class PatientResolverBase {
       ...args,
       data: {
         ...args.data,
+
+        Doctors: args.data.Doctors
+          ? {
+              connect: args.data.Doctors,
+            }
+          : undefined,
 
         medicalHistory: args.data.medicalHistory
           ? {
@@ -107,13 +78,7 @@ export class PatientResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Patient)
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "update",
-    possession: "any",
-  })
   async updatePatient(
     @graphql.Args() args: UpdatePatientArgs
   ): Promise<Patient | null> {
@@ -122,6 +87,12 @@ export class PatientResolverBase {
         ...args,
         data: {
           ...args.data,
+
+          Doctors: args.data.Doctors
+            ? {
+                connect: args.data.Doctors,
+              }
+            : undefined,
 
           medicalHistory: args.data.medicalHistory
             ? {
@@ -141,11 +112,6 @@ export class PatientResolverBase {
   }
 
   @graphql.Mutation(() => Patient)
-  @nestAccessControl.UseRoles({
-    resource: "Patient",
-    action: "delete",
-    possession: "any",
-  })
   async deletePatient(
     @graphql.Args() args: DeletePatientArgs
   ): Promise<Patient | null> {
@@ -161,35 +127,24 @@ export class PatientResolverBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [Doctor], { name: "doctors" })
-  @nestAccessControl.UseRoles({
-    resource: "Doctor",
-    action: "read",
-    possession: "any",
+  @graphql.ResolveField(() => Doctor, {
+    nullable: true,
+    name: "doctors",
   })
   async resolveFieldDoctors(
-    @graphql.Parent() parent: Patient,
-    @graphql.Args() args: DoctorFindManyArgs
-  ): Promise<Doctor[]> {
-    const results = await this.service.findDoctors(parent.id, args);
+    @graphql.Parent() parent: Patient
+  ): Promise<Doctor | null> {
+    const result = await this.service.getDoctors(parent.id);
 
-    if (!results) {
-      return [];
+    if (!result) {
+      return null;
     }
-
-    return results;
+    return result;
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => MedicalHistory, {
     nullable: true,
     name: "medicalHistory",
-  })
-  @nestAccessControl.UseRoles({
-    resource: "MedicalHistory",
-    action: "read",
-    possession: "any",
   })
   async resolveFieldMedicalHistory(
     @graphql.Parent() parent: Patient

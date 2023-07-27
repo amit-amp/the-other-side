@@ -10,7 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Doctor, Patient, Specialty, User } from "@prisma/client";
+import { Prisma, Doctor, Patient, Specialty } from "@prisma/client";
 
 export class DoctorServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -64,13 +64,5 @@ export class DoctorServiceBase {
         where: { id: parentId },
       })
       .specialty();
-  }
-
-  async getUser(parentId: string): Promise<User | null> {
-    return this.prisma.doctor
-      .findUnique({
-        where: { id: parentId },
-      })
-      .user();
   }
 }

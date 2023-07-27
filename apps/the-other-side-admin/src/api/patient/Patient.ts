@@ -5,7 +5,7 @@ export type Patient = {
   age: number;
   birthday: Date | null;
   createdAt: Date;
-  Doctors?: Array<Doctor>;
+  Doctors?: Doctor | null;
   firstName: string;
   id: string;
   lastName: string;
